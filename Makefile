@@ -2,13 +2,13 @@
 CC = g++ -std=c++17
 
 # Source files
-SRCS = IgnoreComments.cpp Tokenization.cpp RecursiveDescentParser.cpp main.cpp
+SRCS = IgnoreComments.cpp Tokenization.cpp RecursiveDescentParser.cpp symboltable.cpp main.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)
 
 # Executable file
-MAIN = RecursiveDescentParser
+MAIN = symboltable
 
 # Build rule for the executable
 $(MAIN): $(OBJS)
