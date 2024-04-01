@@ -1,48 +1,76 @@
 #include "symboltable.hpp"
 
+SymbolTable::SymbolTable() {
+    // Initialize the symbol table
+}
 
-// Function to insert a variable into the symbol table
 void SymbolTable::insertVariable(const Variable& variable) {
     symbolTableVariables[variable.name] = variable;
 }
 
-// Function to insert a function into the symbol table
 void SymbolTable::insertFunction(const Function& function) {
     symbolTableFunctions[function.name] = function;
 }
 
-// Function to insert a procedure into the symbol table
 void SymbolTable::insertProcedure(const Procedure& procedure) {
     symbolTableProcedures[procedure.name] = procedure;
 }
 
-// Function to print the symbol table
 void SymbolTable::print() const {
-    cout << "Variable Symbol Table:" << endl;
+    cout << "Symbol Table:" << endl;
+    // Print variables
     for (const auto& entry : symbolTableVariables) {
         const Variable& variable = entry.second;
-        cout << "Name: " << variable.name << ", Type: " << variable.type << ", Scope: " << variable.scope << endl;
+        cout << "IDENTIFIER_NAME: " << variable.name << endl;
+        cout << "IDENTIFIER_TYPE: variable" << endl;
+        cout << "DATATYPE: " << variable.type << endl;
+        cout << "DATATYPE_IS_ARRAY: no" << endl;
+        cout << "DATATYPE_ARRAY_SIZE: 0" << endl;
+        cout << "SCOPE: " << variable.scope << endl;
+        cout << endl;
     }
 
-    cout << "Function Symbol Table:" << endl;
+    // Print functions
     for (const auto& entry : symbolTableFunctions) {
         const Function& function = entry.second;
-        cout << "Name: " << function.name << ", Return Type: " << function.returnType << ", Scope: " << function.scope << endl;
-        cout << "Parameters:" << endl;
+        cout << "IDENTIFIER_NAME: " << function.name << endl;
+        cout << "IDENTIFIER_TYPE: function" << endl;
+        cout << "DATATYPE: " << function.returnType << endl;
+        cout << "DATATYPE_IS_ARRAY: no" << endl;
+        cout << "DATATYPE_ARRAY_SIZE: 0" << endl;
+        cout << "SCOPE: " << function.scope << endl;
+        cout << "PARAMETER LIST FOR: " << function.name << endl;
         for (const auto& param : function.parameters) {
-            cout << param.first << ": " << param.second << endl;
+            cout << "IDENTIFIER_NAME: " << param.first << endl;
+            cout << "DATATYPE: " << param.second << endl;
+            cout << "DATATYPE_IS_ARRAY: no" << endl; // Assuming parameters are not arrays
+            cout << "DATATYPE_ARRAY_SIZE: 0" << endl; // Assuming parameters are not arrays
+            cout << "SCOPE: " << function.scope << endl;
         }
+        cout << endl;
     }
 
-    cout << "Procedure Symbol Table:" << endl;
+    // Print procedures
     for (const auto& entry : symbolTableProcedures) {
         const Procedure& procedure = entry.second;
-        cout << "Name: " << procedure.name << ", Scope: " << procedure.scope << endl;
-        cout << "Parameters:" << endl;
+        cout << "IDENTIFIER_NAME: " << procedure.name << endl;
+        cout << "IDENTIFIER_TYPE: procedure" << endl;
+        cout << "DATATYPE: NOT APPLICABLE" << endl;
+        cout << "DATATYPE_IS_ARRAY: no" << endl;
+        cout << "DATATYPE_ARRAY_SIZE: 0" << endl;
+        cout << "SCOPE: " << procedure.scope << endl;
+        cout << "PARAMETER LIST FOR: " << procedure.name << endl;
         for (const auto& param : procedure.parameters) {
-            cout << param.first << ": " << param.second << endl;
+            cout << "IDENTIFIER_NAME: " << param.first << endl;
+            cout << "DATATYPE: " << param.second << endl;
+            cout << "DATATYPE_IS_ARRAY: no" << endl; // Assuming parameters are not arrays
+            cout << "DATATYPE_ARRAY_SIZE: 0" << endl; // Assuming parameters are not arrays
+            cout << "SCOPE: " << procedure.scope << endl;
         }
+        cout << endl;
     }
 }
 
-
+void handleSyntaxErrors(const string& errorMessage, int lineNumber) {
+    cerr << "Error on line " << lineNumber << ": " << errorMessage << endl;
+}

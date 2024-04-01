@@ -6,18 +6,16 @@
 #include <unordered_map>
 #include <sstream>
 
-// Using the std namespace
 using namespace std;
 
-//struct for da defined variables
+// Struct for variables
 struct Variable {
     string name;
     string type;
     string scope;
 };
 
-//struct for da functions
-//"Functions and procedures may also have an input parameter list of variables and types."
+// Struct for functions
 struct Function {
     string name;
     string returnType;
@@ -25,21 +23,18 @@ struct Function {
     vector<pair<string, string>> parameters; // (name, type)
 };
 
-//struct for da procedures
-//"Functions and procedures may also have an input parameter list of variables and types." 
+// Struct for procedures
 struct Procedure {
     string name;
     string scope;
     vector<pair<string, string>> parameters; // (name, type)
 };
 
-
+// Symbol table class
 class SymbolTable {
 public:
     // Constructor
-    SymbolTable() {
-        // Initialize da symbol table
-    }
+    SymbolTable();
 
     // Function declarations
     void insertVariable(const Variable& variable);
@@ -54,21 +49,7 @@ private:
     unordered_map<string, Procedure> symbolTableProcedures;
 };
 
-
-// Function to handle syntax errors and output error messages
-// I think creating a function might be an easier way to handle our errors but if you guys desagree you 
-// can take this out.
-void handleSyntaxErrors(const string& errorMessage, int lineNumber) {
-    cerr << "Error on line " << lineNumber << ": " << errorMessage << endl;
-}
-
-// Function to output symbol table
-void outputSymbolTable(const unordered_map<string, Variable>& symbolTable) {
-    cout << "Symbol Table:" << endl;
-    for (const auto& entry : symbolTable) {
-        const Variable& variable = entry.second;
-        cout << "Name: " << variable.name << ", Type: " << variable.type << ", Scope: " << variable.scope << endl;
-    }
-}
+// Function to handle syntax errors
+void handleSyntaxErrors(const string& errorMessage, int lineNumber);
 
 #endif /* SYMBOLTABLE_HPP */
