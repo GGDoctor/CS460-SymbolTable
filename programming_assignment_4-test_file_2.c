@@ -1,5 +1,5 @@
 // ***************************************************
-// * CS460: Programming Assignment 3: Test Program 9 *
+// * CS460: Programming Assignment 4: Test Program 2 *
 // ***************************************************
 
 
@@ -9,7 +9,7 @@
 // *                                                                                 *
 // * Hex digit returns -1 upon error                                                 *
 // ***********************************************************************************
-function int hexdigit2int (char int) // syntax error - cannot use "int" for the name of a variable!
+function int hexdigit2int (char hex_digit)
 {
   int i, digit;
 
