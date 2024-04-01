@@ -1,12 +1,7 @@
-/**
- * @file main.cpp
- * @brief Main function for Project 3 - Recursive Descent Parser
- * @authors Jacob Franco, Zach Gassner, Haley Joerger, Adam Lyday 
- */
-
 #include "IgnoreComments.hpp"
 #include "Tokenization.hpp"
 #include "RecursiveDescentParser.hpp"
+#include "symboltable.hpp" // Include the symbol table header
 #include <iostream>
 #include <sstream>
 
@@ -20,21 +15,23 @@ int main(int argc, char *argv[]) {
 
     string fileName = argv[1];
     IgnoreComments ignoreComments(fileName);
-
-    // outputs the input program without comments
-    // cout << ignoreComments << '\n'; 
-
-    // converting the output stream to a string for tokenization constructor
     stringstream ss;
     ss << ignoreComments;
     Tokenization tokenization(ss.str());
-
-    // outputs tokens according to project 2 spec
-    // cout << tokenization << '\n';
-
     vector<Token> tokens = tokenization.getTokens();
     RecursiveDescentParser recursiveDescentParser(tokens);
-    cout << recursiveDescentParser;
+
+    // Get identifiers from the parser
+    vector<Identifier> identifiers = recursiveDescentParser.getIdentifiers();
+
+    // Insert identifiers into the symbol table
+    SymbolTable symbolTable;
+    for (const auto& identifier : identifiers) {
+        symbolTable.insertIdentifier(identifier);
+    }
+
+    // Print the symbol table
+    symbolTable.print();
 
     return 0;
 }

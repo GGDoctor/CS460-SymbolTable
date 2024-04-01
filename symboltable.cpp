@@ -43,8 +43,8 @@ void SymbolTable::print() const {
         for (const auto& param : function.parameters) {
             cout << "IDENTIFIER_NAME: " << param.first << endl;
             cout << "DATATYPE: " << param.second << endl;
-            cout << "DATATYPE_IS_ARRAY: no" << endl; // Assuming parameters are not arrays
-            cout << "DATATYPE_ARRAY_SIZE: 0" << endl; // Assuming parameters are not arrays
+            cout << "DATATYPE_IS_ARRAY: no" << endl; 
+            cout << "DATATYPE_ARRAY_SIZE: 0" << endl; 
             cout << "SCOPE: " << function.scope << endl;
         }
         cout << endl;
@@ -63,7 +63,7 @@ void SymbolTable::print() const {
         for (const auto& param : procedure.parameters) {
             cout << "IDENTIFIER_NAME: " << param.first << endl;
             cout << "DATATYPE: " << param.second << endl;
-            cout << "DATATYPE_IS_ARRAY: no" << endl; // Assuming parameters are not arrays
+            cout << "DATATYPE_IS_ARRAY: no" << endl; 
             cout << "DATATYPE_ARRAY_SIZE: 0" << endl; // Assuming parameters are not arrays
             cout << "SCOPE: " << procedure.scope << endl;
         }
