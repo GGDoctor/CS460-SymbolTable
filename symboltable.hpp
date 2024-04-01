@@ -33,7 +33,31 @@ struct Procedure {
     vector<pair<string, string>> parameters; // (name, type)
 };
 
+
+class SymbolTable {
+public:
+    // Constructor
+    SymbolTable() {
+        // Initialize da symbol table
+    }
+
+    // Function declarations
+    void insertVariable(const Variable& variable);
+    void insertFunction(const Function& function);
+    void insertProcedure(const Procedure& procedure);
+    void print() const;
+
+private:
+    // Data members
+    unordered_map<string, Variable> symbolTableVariables;
+    unordered_map<string, Function> symbolTableFunctions;
+    unordered_map<string, Procedure> symbolTableProcedures;
+};
+
+
 // Function to handle syntax errors and output error messages
+// I think creating a function might be an easier way to handle our errors but if you guys desagree you 
+// can take this out.
 void handleSyntaxErrors(const string& errorMessage, int lineNumber) {
     cerr << "Error on line " << lineNumber << ": " << errorMessage << endl;
 }
