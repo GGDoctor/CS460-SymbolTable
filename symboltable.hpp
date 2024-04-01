@@ -13,6 +13,7 @@ struct Variable {
     string name;
     string type;
     string scope;
+    string datatype;
 };
 
 // Struct for functions
@@ -21,6 +22,7 @@ struct Function {
     string returnType;
     string scope;
     vector<pair<string, string>> parameters; // (name, type)
+    string datatype;
 };
 
 // Struct for procedures
@@ -28,6 +30,7 @@ struct Procedure {
     string name;
     string scope;
     vector<pair<string, string>> parameters; // (name, type)
+    string datatype;
 };
 
 // Symbol table class
