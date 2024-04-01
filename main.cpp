@@ -8,7 +8,6 @@
 #include "Tokenization.hpp"
 #include "RecursiveDescentParser.hpp"
 #include "symboltable.hpp"
-
 #include <iostream>
 #include <sstream>
 
@@ -33,12 +32,22 @@ int main(int argc, char *argv[]) {
 
     // outputs tokens according to project 2 spec
     // cout << tokenization << '\n';
+  
 
-    vector<Token> tokens = tokenization.getTokens();
-    RecursiveDescentParser recursiveDescentParser(tokens);
-    cout << recursiveDescentParser;
+
+   vector<Token> tokens = tokenization.getTokens();
+
+
 
     SymbolTable symbolTable;
+    symbolTable.populateSymbolTable(tokens);
+    // Print the symbol table
+    symbolTable.print();
+
+        
+    RecursiveDescentParser recursiveDescentParser(tokens);
+   //cout << recursiveDescentParser;
+
 
     return 0;
 }

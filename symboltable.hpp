@@ -4,11 +4,11 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-#include <sstream>
+#include "Tokenization.hpp" // Include the header where Token is defined
 
 using namespace std;
 
-// Struct for variables
+// Structs for variables, functions, and procedures
 struct Variable {
     string name;
     string type;
@@ -16,37 +16,31 @@ struct Variable {
     string datatype;
 };
 
-// Struct for functions
 struct Function {
     string name;
     string returnType;
     string scope;
-    vector<pair<string, string>> parameters; // (name, type)
+    vector<pair<string, string>> parameters;
     string datatype;
 };
 
-// Struct for procedures
 struct Procedure {
     string name;
     string scope;
-    vector<pair<string, string>> parameters; // (name, type)
+    vector<pair<string, string>> parameters;
     string datatype;
 };
 
 // Symbol table class
 class SymbolTable {
 public:
-    // Constructor
     SymbolTable();
-
-    // Function declarations
     void insertVariable(const Variable& variable);
     void insertFunction(const Function& function);
     void insertProcedure(const Procedure& procedure);
+    void populateSymbolTable(const vector<Token>& tokens); // Declaration for populateSymbolTable
     void print() const;
-
 private:
-    // Data members
     unordered_map<string, Variable> symbolTableVariables;
     unordered_map<string, Function> symbolTableFunctions;
     unordered_map<string, Procedure> symbolTableProcedures;
