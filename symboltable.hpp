@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include "Tokenization.hpp" // Include the header where Token is defined
+#include "RecursiveDescentParser.hpp"
 
 using namespace std;
 
