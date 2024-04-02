@@ -37,16 +37,14 @@ int main(int argc, char *argv[]) {
 
    vector<Token> tokens = tokenization.getTokens();
 
-
+    RecursiveDescentParser recursiveDescentParser(tokens);
+   //cout << recursiveDescentParser;
 
     SymbolTable symbolTable;
     symbolTable.populateSymbolTable(tokens);
     // Print the symbol table
     symbolTable.print();
 
-        
-    RecursiveDescentParser recursiveDescentParser(tokens);
-   //cout << recursiveDescentParser;
 
 
     return 0;
