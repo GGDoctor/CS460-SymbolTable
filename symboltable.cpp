@@ -17,19 +17,29 @@ void SymbolTable::insertProcedure(const Procedure& procedure) {
 }
 
 void SymbolTable::populateSymbolTable(const vector<Token>& tokens) {
-    string currentScope; // To keep track of the current scope
+    /*
+    *   Changed the type of scope in .h and here to int so we can track it easier
+    */
+
+
+    int currentScope; // To keep track of the current scope
     string currentFunction; // To keep track of the current function being processed
     vector<pair<string, string>> currentParameters; // To store parameters of the current function/procedure
-
+    
     // Iterate over the tokens
     for (size_t i = 0; i < tokens.size(); ++i) {
         const Token& token = tokens[i];
 
+        // Note that the token.type is not actually IDENTIFIER it is 2, refer to Tokenixation.hpp
+        // cout<< token.type << " " << token.character << " " << isdigit(token.type) << endl;
+
+        int scope = currentScope;
+       
         // Check for function definitions
         if (token.type == IDENTIFIER && (token.character == "function" || token.character == "procedure")) {
             // Extract function/procedure name and scope
             string name = tokens[i + 2].character;
-            string scope = currentScope;
+            // string scope = currentScope;
 
             // Check if it's a function or procedure
             if (token.character == "function") {
@@ -47,7 +57,8 @@ void SymbolTable::populateSymbolTable(const vector<Token>& tokens) {
                 // Update da current function and clear parameters
                 currentFunction = name;
                 currentParameters.clear();
-            } else {
+            } 
+            else if (token.character == "procedure") {
                 // Insert da procedure into the symbol table
                 Procedure procedure;
                 procedure.name = name;
@@ -59,13 +70,14 @@ void SymbolTable::populateSymbolTable(const vector<Token>& tokens) {
                 currentFunction = name;
                 currentParameters.clear();
             }
+            scope += 1;
         }
     }
 }
 
 void SymbolTable::print() const {
 
-    cout << "Symbol Table:" << endl;
+    cout << "Symbol Table:" << endl << endl;
     // Print variables
     for (const auto& entry : symbolTableVariables) {
         const Variable& variable = entry.second;
@@ -87,7 +99,8 @@ void SymbolTable::print() const {
         cout << "DATATYPE_IS_ARRAY: no" << endl;
         cout << "DATATYPE_ARRAY_SIZE: 0" << endl;
         cout << "SCOPE: " << function.scope << endl;
-        cout << "PARAMETER LIST FOR: " << function.name << endl;
+        //Need to fix this. Does not have to be here till (int n) or whatever
+        // cout << "PARAMETER LIST FOR: " << function.name << endl;
         for (const auto& param : function.parameters) {
             cout << "IDENTIFIER_NAME: " << param.first << endl;
             cout << "DATATYPE: " << param.second << endl;
@@ -107,7 +120,8 @@ void SymbolTable::print() const {
         cout << "DATATYPE_IS_ARRAY: no" << endl;
         cout << "DATATYPE_ARRAY_SIZE: 0" << endl;
         cout << "SCOPE: " << procedure.scope << endl;
-        cout << "PARAMETER LIST FOR: " << procedure.name << endl;
+        //Need to fix this. Does not have to be here till (int n) or whatever
+        // cout << "PARAMETER LIST FOR: " << procedure.name << endl;
         for (const auto& param : procedure.parameters) {
             cout << "IDENTIFIER_NAME: " << param.first << endl;
             cout << "DATATYPE: " << param.second << endl;

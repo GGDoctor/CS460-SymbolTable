@@ -19,14 +19,14 @@ struct Variable {
 struct Function {
     string name;
     string returnType;
-    string scope;
+    int scope; //Changed from string
     vector<pair<string, string>> parameters;
     string datatype;
 };
 
 struct Procedure {
     string name;
-    string scope;
+    int scope; //Changed from string
     vector<pair<string, string>> parameters;
     string datatype;
 };
