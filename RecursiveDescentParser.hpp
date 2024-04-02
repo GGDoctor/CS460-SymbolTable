@@ -88,6 +88,7 @@ public:
      */
     RecursiveDescentParser(const vector<Token>& tokens);
 
+    LCRS* getConcreteSyntaxTree();
     /**
      * @brief Output operator overload
      * @param os - The output stream operator

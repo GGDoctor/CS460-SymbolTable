@@ -303,3 +303,7 @@ ostream& operator << (ostream& os, const RecursiveDescentParser& obj) {
     os << obj.concreteSyntaxTree->BFS();
     return os;
 }
+
+LCRS* RecursiveDescentParser::getConcreteSyntaxTree(){
+    return concreteSyntaxTree;
+}

@@ -16,12 +16,13 @@ void SymbolTable::insertProcedure(const Procedure& procedure) {
     symbolTableProcedures[procedure.name] = procedure;
 }
 
-void SymbolTable::populateSymbolTable(const vector<Token>& tokens) {
+void SymbolTable::populateSymbolTable(LCRS* symbols) {
     /*
     *   Changed the type of scope in .h and here to int so we can track it easier
     */
+   cout << symbols << endl;
 
-
+    /*
     int currentScope; // To keep track of the current scope
     string currentFunction; // To keep track of the current function being processed
     vector<pair<string, string>> currentParameters; // To store parameters of the current function/procedure
@@ -73,6 +74,7 @@ void SymbolTable::populateSymbolTable(const vector<Token>& tokens) {
             scope += 1;
         }
     }
+    */
 }
 
 void SymbolTable::print() const {

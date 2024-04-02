@@ -39,7 +39,7 @@ public:
     void insertVariable(const Variable& variable);
     void insertFunction(const Function& function);
     void insertProcedure(const Procedure& procedure);
-    void populateSymbolTable(const vector<Token>& tokens); // Declaration for populateSymbolTable
+    void populateSymbolTable(LCRS* symbols); // Declaration for populateSymbolTable
     void print() const;
 private:
     unordered_map<string, Variable> symbolTableVariables;
