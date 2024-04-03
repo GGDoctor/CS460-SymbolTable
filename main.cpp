@@ -41,10 +41,10 @@ int main(int argc, char *argv[]) {
    //cout << recursiveDescentParser;
 
     LCRS* symbols = recursiveDescentParser.getConcreteSyntaxTree();
-    SymbolTable symbolTable;
-    symbolTable.populateSymbolTable(symbols);
+    SymbolTable symbolTable(tokens);
+    //symbolTable.populateSymbolTable(symbols);
     // Print the symbol table
-    symbolTable.print();
+    //symbolTable.print();
 
 
 

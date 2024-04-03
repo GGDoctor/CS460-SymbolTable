@@ -1,5 +1,5 @@
-// #ifndef SYMBOLTABLE_HPP
-// #define SYMBOLTABLE_HPP
+ #ifndef SYMBOLTABLE_HPP
+ #define SYMBOLTABLE_HPP
 
 // #include <iostream>
 // #include <vector>
@@ -60,8 +60,8 @@
  * @authors Jacob Franco, Zach Gassner, Haley Joerger, Adam Lyday 
  */
 
-#ifndef RECURSIVE_DESCENT_PARSER_HPP
-#define RECURSIVE_DESCENT_PARSER_HPP
+// #ifndef RECURSIVE_DESCENT_PARSER_HPP
+// #define RECURSIVE_DESCENT_PARSER_HPP
 
 #include "IgnoreComments.hpp"
 #include "Tokenization.hpp"
