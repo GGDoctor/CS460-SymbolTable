@@ -37,11 +37,13 @@ int main(int argc, char *argv[]) {
 
    vector<Token> tokens = tokenization.getTokens();
 
-    RecursiveDescentParser recursiveDescentParser(tokens);
+    //RecursiveDescentParser recursiveDescentParser(tokens);
    //cout << recursiveDescentParser;
 
-    LCRS* symbols = recursiveDescentParser.getConcreteSyntaxTree();
+    //LCRS* symbols = recursiveDescentParser.getConcreteSyntaxTree();
     SymbolTable symbolTable(tokens);
+
+    cout << symbolTable;
     //symbolTable.populateSymbolTable(symbols);
     // Print the symbol table
     //symbolTable.print();

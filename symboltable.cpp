@@ -158,7 +158,7 @@
  * @param token - A token object
  * @returns The actual character(s) of the token
  */
-auto toTokenCharacter(Token token) {
+auto symbolToTokenCharacter(Token token) {
     return token.character;
 }
 
@@ -167,7 +167,7 @@ auto toTokenCharacter(Token token) {
  * @param token - A Token object
  * @returns A string of the token type instead of 0, 1, 2, ...
  */
-auto toTokenType(Token token) {
+auto symbolToTokenType(Token token) {
     switch (token.type) {
         case CHAR:
             return "CHAR";
@@ -275,17 +275,17 @@ auto toTokenType(Token token) {
  * @brief Breadth-first search function
  * @returns A string with the resulting BFS
  */
-string LCRS::BFS() const {
+string SymbolLCRS::BFS() const {
     /**
-     * @remark pair a LCRS node and its level in the tree 
+     * @remark pair a SymbolLCRS node and its level in the tree 
      */
-    queue<std::pair<const LCRS*, int>> q;
+    queue<std::pair<const SymbolLCRS*, int>> q;
     q.push({this, 0});
     string result = "";
     int currentLevel = -1;
 
     while (!q.empty()) {
-        const LCRS* current = q.front().first;
+        const SymbolLCRS* current = q.front().first;
         int level = q.front().second;
         q.pop();
 
@@ -296,7 +296,7 @@ string LCRS::BFS() const {
             currentLevel = level;
         }
 
-        result += toTokenCharacter(current->token) + ' ';
+        result += symbolToTokenCharacter(current->token) + ' ';
 
         if (current->leftChild)
             q.push({current->leftChild, level + 1});
@@ -312,26 +312,26 @@ string LCRS::BFS() const {
  * @brief Returns the DFA state 
  * @param token - The token to get the DFA state for
  */
-State getStateDFA(Token token) {
+SymbolState symbolGetStateDFA(Token token) {
     if (token.type == IDENTIFIER) {
         if (token.character == "function" || token.character == "procedure") 
-            return FUNCTION_DECLARATION;
+            return SymbolFUNCTION_DECLARATION;
         
         if (token.character == "int" || token.character == "string" ||
             token.character == "char" || token.character == "bool")
-            return VARIABLE_DECLARATION;
+            return SymbolVARIABLE_DECLARATION;
 
         if (token.character == "if")
-            return CONDITIONAL;
+            return SymbolCONDITIONAL;
 
         if (token.character == "for" || token.character == "while")
-            return LOOP;
+            return SymbolLOOP;
 
         if (token.character == "=")
-            return VARIABLE_ASSIGNMENT;
+            return SymbolVARIABLE_ASSIGNMENT;
     }
         
-    return OTHER;
+    return SymbolOTHER;
 }
 
 /**
@@ -344,64 +344,64 @@ SymbolTable::SymbolTable(const vector<Token>& tokens) {
      */
     int leftParenCounter = 0;
 
-    LCRS* lcrs = tokens.size() > 0 ? new LCRS(tokens[0]) : nullptr;
-    LCRS* temp = lcrs;
-    State state = getStateDFA(tokens[0]);
+    SymbolLCRS* lcrs = tokens.size() > 0 ? new SymbolLCRS(tokens[0]) : nullptr;
+    SymbolLCRS* temp = lcrs;
+    SymbolState state = symbolGetStateDFA(tokens[0]);
 
     for (int i = 1; i < tokens.size(); i++) {
         switch (state) {
-            case OTHER:
+            case SymbolOTHER:
                 if (tokens[i - 1].type == SEMICOLON || 
                     tokens[i - 1].type == RIGHT_BRACE ||
                     tokens[i - 1].type == LEFT_BRACE ||
                     tokens[i - 1].character == "else") {
-                    temp->leftChild = new LCRS(tokens[i]);
+                    temp->leftChild = new SymbolLCRS(tokens[i]);
                     temp = temp->leftChild;
-                    state = getStateDFA(tokens[i]);
+                    state = symbolGetStateDFA(tokens[i]);
                 } else {
-                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp->rightSibling = new SymbolLCRS(tokens[i]);
                     temp = temp->rightSibling;
                 }
                 break;
 
-            case FUNCTION_DECLARATION:
+            case SymbolFUNCTION_DECLARATION:
                 if (tokens[i - 1].type == RIGHT_PARENTHESIS) {
-                    temp->leftChild = new LCRS(tokens[i]);
+                    temp->leftChild = new SymbolLCRS(tokens[i]);
                     temp = temp->leftChild;
-                    state = getStateDFA(tokens[i]);
+                    state = symbolGetStateDFA(tokens[i]);
                 } else {
-                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp->rightSibling = new SymbolLCRS(tokens[i]);
                     temp = temp->rightSibling;
                 }
                 break;
 
-            case VARIABLE_DECLARATION:
+            case SymbolVARIABLE_DECLARATION:
                 if (tokens[i - 1].type == SEMICOLON) {
-                    temp->leftChild = new LCRS(tokens[i]);
+                    temp->leftChild = new SymbolLCRS(tokens[i]);
                     temp = temp->leftChild;
-                    state = getStateDFA(tokens[i]);
+                    state = symbolGetStateDFA(tokens[i]);
                 } else {
-                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp->rightSibling = new SymbolLCRS(tokens[i]);
                     temp = temp->rightSibling;
                 }
                 break;
 
-            case VARIABLE_ASSIGNMENT:
+            case SymbolVARIABLE_ASSIGNMENT:
                 if (tokens[i - 1].type == SEMICOLON) {
-                    temp->leftChild = new LCRS(tokens[i]);
+                    temp->leftChild = new SymbolLCRS(tokens[i]);
                     temp = temp->leftChild;
-                    state = getStateDFA(tokens[i]);
+                    state = symbolGetStateDFA(tokens[i]);
                 } else {
-                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp->rightSibling = new SymbolLCRS(tokens[i]);
                     temp = temp->rightSibling;
                 }
                 break;
 
-            case LOOP:
+            case SymbolLOOP:
                 if (tokens[i - 1].type == RIGHT_PARENTHESIS && leftParenCounter == 0) {
-                    temp->leftChild = new LCRS(tokens[i]);
+                    temp->leftChild = new SymbolLCRS(tokens[i]);
                     temp = temp->leftChild;
-                    state = getStateDFA(tokens[i]);
+                    state = symbolGetStateDFA(tokens[i]);
                 } else {
                     if (tokens[i].type == RIGHT_PARENTHESIS) 
                         leftParenCounter--;
@@ -409,16 +409,16 @@ SymbolTable::SymbolTable(const vector<Token>& tokens) {
                     if (tokens[i].type == LEFT_PARENTHESIS) 
                         leftParenCounter++;
             
-                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp->rightSibling = new SymbolLCRS(tokens[i]);
                     temp = temp->rightSibling;
                 }
                 break;
 
-            case CONDITIONAL:
+            case SymbolCONDITIONAL:
                 if (tokens[i - 1].type == RIGHT_PARENTHESIS && leftParenCounter == 0) {
-                    temp->leftChild = new LCRS(tokens[i]);
+                    temp->leftChild = new SymbolLCRS(tokens[i]);
                     temp = temp->leftChild;
-                    state = getStateDFA(tokens[i]);
+                    state = symbolGetStateDFA(tokens[i]);
                 } else {
                     if (tokens[i].type == RIGHT_PARENTHESIS) 
                         leftParenCounter--;
@@ -426,7 +426,7 @@ SymbolTable::SymbolTable(const vector<Token>& tokens) {
                     if (tokens[i].type == LEFT_PARENTHESIS) 
                         leftParenCounter++;
             
-                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp->rightSibling = new SymbolLCRS(tokens[i]);
                     temp = temp->rightSibling;
                 }
                 break;
@@ -451,6 +451,6 @@ ostream& operator << (ostream& os, const SymbolTable& obj) {
     return os;
 }
 
-LCRS* SymbolTable::getConcreteSyntaxTree(){
+SymbolLCRS* SymbolTable::getConcreteSyntaxTree(){
     return concreteSyntaxTree;
 }

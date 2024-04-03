@@ -74,26 +74,26 @@ using namespace std;
  * @enum State
  * @brief Enumerates the different states of the DFA 
  */
-enum State {
-    OTHER,
-    FUNCTION_DECLARATION,
-    VARIABLE_DECLARATION,
-    VARIABLE_ASSIGNMENT,
-    LOOP,
-    CONDITIONAL
+enum SymbolState {
+    SymbolOTHER,
+    SymbolFUNCTION_DECLARATION,
+    SymbolVARIABLE_DECLARATION,
+    SymbolVARIABLE_ASSIGNMENT,
+    SymbolLOOP,
+    SymbolCONDITIONAL
 };
 
 /**
  * @class LCRS
  * @brief Represents a LCRS binary tree 
  */
-class LCRS {
+class SymbolLCRS {
 public:
     /**
      * @brief Constructor
      * @param token - A token from the input vector of tokens 
      */
-    LCRS(const Token& token) : token(token), leftChild(nullptr), rightSibling(nullptr) { }
+    SymbolLCRS(const Token& token) : token(token), leftChild(nullptr), rightSibling(nullptr) { }
 
     /**
      * @brief Breadth-first search function
@@ -110,18 +110,18 @@ private:
     /**
      * @brief The LCRS node's LC
      */
-    LCRS* leftChild;
+    SymbolLCRS* leftChild;
 
     /**
      * @brief The LCRS node's RS 
      */
-    LCRS* rightSibling;
+    SymbolLCRS* rightSibling;
 
     /**
      * @brief Returns the DFA state 
      * @param token - The token to get the DFA state for
      */
-    State getStateDFA(Token token);
+    SymbolState getStateDFA(Token token);
 
     /**
      * @brief So RecursiveDescentParser can access LCRS private variables 
@@ -142,7 +142,7 @@ public:
      */
     SymbolTable(const vector<Token>& tokens);
 
-    LCRS* getConcreteSyntaxTree();
+    SymbolLCRS* getConcreteSyntaxTree();
     /**
      * @brief Output operator overload
      * @param os - The output stream operator
@@ -158,7 +158,7 @@ private:
     /**
      * @brief The CST 
      */
-    LCRS* concreteSyntaxTree;
+    SymbolLCRS* concreteSyntaxTree;
 };
 
 #endif
