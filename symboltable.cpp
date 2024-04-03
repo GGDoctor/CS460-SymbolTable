@@ -295,8 +295,17 @@ string SymbolLCRS::BFS() const {
             
             currentLevel = level;
         }
+        
+        // Skip printing for parentheses and braces
+        if (current->token.type != LEFT_PARENTHESIS && 
+            current->token.type != RIGHT_PARENTHESIS && 
+            current->token.type != LEFT_BRACE && 
+            current->token.type != RIGHT_BRACE &&
+            current->token.type != SEMICOLON) {
+            result += symbolToTokenCharacter(current->token) + ' ';
+        }
 
-        result += symbolToTokenCharacter(current->token) + ' ';
+        // result += symbolToTokenCharacter(current->token) + ' ';
 
         if (current->leftChild)
             q.push({current->leftChild, level + 1});
