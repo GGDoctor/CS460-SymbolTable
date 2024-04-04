@@ -1,7 +1,121 @@
 #include "symboltable.hpp"
+#include <string>
+#include <vector>
+#include <sstream>
+#include <cassert>
 
 SymbolTable::SymbolTable() {
     // Initialize the symbol table
+}
+
+/**
+ * @brief Constructs SymbolTable object
+ * @param cst - The string version of the concrete syntax tree that was
+ *          generated in RecursiveDescentParser
+ */
+SymbolTable::SymbolTable(const string& cst) {
+    //cout << cst;
+
+    // makes 2d vector of strings from the cst string
+    //
+    // outter vector is vector of vectors where each inner vector represents one
+    // line from the cst string
+    //
+    // inner vector has each word from that line
+    istringstream iss(cst);
+    vector<vector<string>> linesAndWords;
+    string line;
+    while (getline(iss, line)) {
+        istringstream lineStream(line);
+        vector<string> words;
+        string word;
+
+        while (lineStream >> word) {
+            words.push_back(word);
+        }
+
+        linesAndWords.push_back(words);
+    }
+
+    // used to keep track of when a new scope is neccesary -- when to scope++
+    int leftBraceCounter = 0;
+    int scope = 1;
+    for (int i = 0; i < linesAndWords.size(); i++) {
+        TableEntry tableEntry;
+        StateDFA state = linesAndWords[i][0] == "function" ? FUNCTION :
+                         linesAndWords[i][0] == "procedure" ? PROCEDURE :
+                        (linesAndWords[i][0] == "int" ||
+                         linesAndWords[i][0] == "char" ||
+                         linesAndWords[i][0] == "bool") ? VARIABLE : OTHER_STATE;
+
+        switch (state) {
+            case FUNCTION:
+                tableEntry.identifierName = linesAndWords[i][2];
+                tableEntry.identifierType = linesAndWords[i][0];
+                tableEntry.datatype = linesAndWords[i][1];
+                tableEntry.datatypeIsArray = false;
+                tableEntry.datatypeArraySize = 0;
+                tableEntry.scope = scope;
+                table.push_back(tableEntry);
+                //cout << "function";
+                break;
+            case PROCEDURE:
+                tableEntry.identifierName = linesAndWords[i][1];
+                tableEntry.identifierType = linesAndWords[i][0];
+                tableEntry.datatype = "NOT APPLICABLE";
+                tableEntry.datatypeIsArray = false;
+                tableEntry.datatypeArraySize = 0;
+                tableEntry.scope = scope;
+                table.push_back(tableEntry);
+                //cout << "procedure";
+                break;
+            case VARIABLE:
+                tableEntry.identifierName = linesAndWords[i][1];
+                tableEntry.identifierType = "datatype";
+                tableEntry.datatype = linesAndWords[i][0];
+                tableEntry.scope = leftBraceCounter == 0 ? 0 : scope;
+
+                cout << linesAndWords[i].size() << ": ";
+                for (int j = 0; j < linesAndWords[i].size(); j++) {
+                    cout << linesAndWords[i][j] << ' ';
+                }
+
+                // 1 variable
+                if (linesAndWords[i].size() == 3) {
+                    tableEntry.datatypeIsArray = false;
+                    tableEntry.datatypeArraySize = 0;
+                    table.push_back(tableEntry);
+                } else if (linesAndWords[i][2] == ",") { // multiple variables
+                    tableEntry.datatypeIsArray = false;
+                    tableEntry.datatypeArraySize = 0;
+                    table.push_back(tableEntry);
+                    assert(linesAndWords[i].size() % 2 == 1);
+                } else { // array 
+                    tableEntry.datatypeIsArray = true;
+                    assert(linesAndWords[i][2] == "[");
+                    tableEntry.datatypeArraySize = stoi(linesAndWords[i][3]);
+                    assert(linesAndWords[i][4] == "]");
+                    table.push_back(tableEntry);
+                }
+                //cout << "\nvariable";
+                break;
+            case OTHER_STATE:
+                if (linesAndWords[i][0] == "{") 
+                    leftBraceCounter++;
+
+                if (linesAndWords[i][0] == "}") {
+                    leftBraceCounter--;
+
+                    if (leftBraceCounter == 0)
+                        scope++;
+                } 
+                break;
+        }
+
+        std::cout << std::endl;
+    }
+    
+    //cout << table.size() << "*****\n";
 }
 
 void SymbolTable::insertVariable(const Variable& variable) {
@@ -123,4 +237,29 @@ void SymbolTable::print() const {
 //I still dont know if this is a good idea but I give up and am tired
 void handleSyntaxErrors(const string& errorMessage, int lineNumber) {
     cerr << "Error on line " << lineNumber << ": " << errorMessage << endl;
+}
+
+/**
+ * @brief Output operator overload
+ * @param os - The output stream operator
+ * @param obj - The SymbolTable object to output
+ * @returns The modified output stream
+ * @remark Outputs symbol table according to project spec
+ * 
+ *      ex: cout << SymbolTableObj;
+ */
+ostream& operator << (ostream& os, const SymbolTable& obj) {
+    for (const auto& entry : obj.table) {
+        os << "IDENTIFIER_NAME: " << entry.identifierName << '\n';
+        os << "IDENTIFIER_TYPE: " << entry.identifierType << '\n';
+        os << "DATATYPE: " << entry.datatype << '\n';
+        os << "DATATYPE_IS_ARRAY: ";
+        if (entry.datatypeIsArray) os << "yes\n";
+        else os << "no\n";
+        os << "DATATYPE_ARRAY_SIZE: " << entry.datatypeArraySize << '\n';
+        os << "SCOPE: " << entry.scope << '\n';
+        os << '\n';
+    }
+
+    return os;
 }

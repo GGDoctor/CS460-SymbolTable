@@ -291,6 +291,13 @@ RecursiveDescentParser::RecursiveDescentParser(const vector<Token>& tokens) {
 }
 
 /**
+ * @brief Getter for CST 
+ */
+LCRS* RecursiveDescentParser::getConcreteSyntaxTree() {
+    return concreteSyntaxTree;
+}
+
+/**
  * @brief Output operator overload
  * @param os - The output stream operator
  * @param obj - The RecursiveDescentParser object to output

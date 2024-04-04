@@ -25,29 +25,28 @@ int main(int argc, char *argv[]) {
     // outputs the input program without comments
     // cout << ignoreComments << '\n'; 
 
-    // converting the output stream to a string for tokenization constructor
+    // converting the output stream to a string for Tokenization constructor
     stringstream ss;
     ss << ignoreComments;
     Tokenization tokenization(ss.str());
+    vector<Token> tokens = tokenization.getTokens();
 
     // outputs tokens according to project 2 spec
     // cout << tokenization << '\n';
-  
 
-
-   vector<Token> tokens = tokenization.getTokens();
-
-
-
-    SymbolTable symbolTable;
-    symbolTable.populateSymbolTable(tokens);
+    //SymbolTable symbolTable;
+    //symbolTable.populateSymbolTable(tokens);
     // Print the symbol table
-    symbolTable.print();
-
+    //symbolTable.print();
         
     RecursiveDescentParser recursiveDescentParser(tokens);
-   //cout << recursiveDescentParser;
+    // cout << recursiveDescentParser;
 
+    // converting the output stream to a string for SymbolTable constructor
+    stringstream ss2;
+    ss2 << recursiveDescentParser;
+    SymbolTable symbolTable(ss2.str());
+    cout << symbolTable;
 
     return 0;
 }
