@@ -90,6 +90,10 @@ SymbolTable::SymbolTable(const string& cst) {
                     tableEntry.datatypeArraySize = 0;
                     table.push_back(tableEntry);
                     assert(linesAndWords[i].size() % 2 == 1);
+                    for (int j = 3; j < linesAndWords[i].size(); j += 2) {
+                        tableEntry.identifierName = linesAndWords[i][j];
+                        table.push_back(tableEntry);
+                    }
                 } else { // array 
                     tableEntry.datatypeIsArray = true;
                     assert(linesAndWords[i][2] == "[");
