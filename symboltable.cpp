@@ -25,6 +25,8 @@ SymbolTable::SymbolTable(const string& cst) {
     istringstream iss(cst);
     vector<vector<string>> linesAndWords;
     string line;
+    int lineNumber = 1;
+
     while (getline(iss, line)) {
         istringstream lineStream(line);
         vector<string> words;
@@ -35,6 +37,7 @@ SymbolTable::SymbolTable(const string& cst) {
         }
 
         linesAndWords.push_back(words);
+        lineNumber++; 
     }
 
     vector<string> slice;
@@ -121,7 +124,7 @@ SymbolTable::SymbolTable(const string& cst) {
                 break;
         }
 
-        std::cout << std::endl;
+        cout << endl;
     }
     
     //cout << table.size() << "*****\n";
@@ -245,6 +248,7 @@ void SymbolTable::print() const {
 
 //I still dont know if this is a good idea but I give up and am tired
 void handleSyntaxErrors(const string& errorMessage, int lineNumber) {
+    
     cerr << "Error on line " << lineNumber << ": " << errorMessage << endl;
 }
 
@@ -285,6 +289,7 @@ ostream& operator << (ostream& os, const SymbolTable& obj) {
     return os;
 }
 
+/*
 void SymbolTable::parseParams(const vector<string>& params, int scope, 
                                             const string& paramListName) {
     ParamListEntry paramListEntry;
@@ -321,3 +326,44 @@ void SymbolTable::parseParams(const vector<string>& params, int scope,
         paramTable.push_back(paramListEntry);
     }
 }
+*/
+
+void SymbolTable::parseParams(const vector<string>& params, int scope, const string& paramListName) {
+    ParamListEntry paramListEntry;
+       
+    cout << "\n******\n";
+    for (const auto& i : params)
+        cout << i << ' ';
+    cout << "\n******\n";
+    paramListEntry.paramListName = paramListName;
+     paramListEntry.scope = scope;
+
+    // Loop through the parameters
+    for (int i = 0; i < params.size(); ++i) {
+        // Skip commas
+        if (params[i] == ",")
+            continue;
+
+        // Skip the '[' character for arrays
+        if (params[i] == "[") {
+            // The array size is the next parameter
+            paramListEntry.datatypeArraySize = stoi(params[i + 1]);
+            continue;
+        }
+
+        // Skip the ']' character for arrays
+        if (params[i] == "]")
+            continue;
+
+        // Determine if the parameter is a datatype or identifier
+        if (params[i + 1] == "," || params[i + 1] == "[" || params[i + 1] == ")") {
+            // Parameter is an identifier
+            paramListEntry.identifierName = params[i];
+            paramTable.push_back(paramListEntry);
+        } else {
+            // Parameter is a datatype
+            paramListEntry.datatype = params[i];
+        }
+    }
+}
+
