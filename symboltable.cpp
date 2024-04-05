@@ -3,6 +3,10 @@
 #include <vector>
 #include <sstream>
 #include <cassert>
+#include <unordered_map> // For fast lookup and storage
+#include <unordered_set>
+
+
 
 SymbolTable::SymbolTable() {
     // Initialize the symbol table
@@ -22,26 +26,38 @@ SymbolTable::SymbolTable(const string& cst) {
     // line from the cst string
     //
     // inner vector has each word from that line
+    
     istringstream iss(cst);
     vector<vector<string>> linesAndWords;
     string line;
+    int lineNumber = 1;
+
     while (getline(iss, line)) {
+
+        lineNumber++;
         istringstream lineStream(line);
         vector<string> words;
         string word;
-
+        
+    
         while (lineStream >> word) {
             words.push_back(word);
+            
         }
 
         linesAndWords.push_back(words);
+       
+        
     }
 
     vector<string> slice;
     // used to keep track of when a new scope is neccesary -- when to scope++
     int leftBraceCounter = 0;
     int scope = 1;
+    unordered_set<string> declaredVariables;
+
     for (int i = 0; i < linesAndWords.size(); i++) {
+               
         TableEntry tableEntry;
         StateDFA state = linesAndWords[i][0] == "function" ? FUNCTION :
                          linesAndWords[i][0] == "procedure" ? PROCEDURE :
@@ -80,10 +96,10 @@ SymbolTable::SymbolTable(const string& cst) {
                 tableEntry.datatype = linesAndWords[i][0];
                 tableEntry.scope = leftBraceCounter == 0 ? 0 : scope;
 
-                cout << linesAndWords[i].size() << ": ";
-                for (int j = 0; j < linesAndWords[i].size(); j++) {
-                    cout << linesAndWords[i][j] << ' ';
-                }
+                //cout << linesAndWords[i].size() << ": ";
+                //for (int j = 0; j < linesAndWords[i].size(); j++) {
+                  //  cout << linesAndWords[i][j] << ' ';
+                //}
 
                 // 1 variable
                 if (linesAndWords[i].size() == 3) {
@@ -107,7 +123,22 @@ SymbolTable::SymbolTable(const string& cst) {
                     table.push_back(tableEntry);
                 }
                 //cout << "\nvariable";
+
+                
+                // Check if the variable is already declared in the current scope
+                if (declaredVariables.find(tableEntry.identifierName) != declaredVariables.end()) {
+                    // Determine if the variable is declared locally or globally
+                    string errorScope = (tableEntry.scope == 0) ? "globally" : "locally";
+
+                    // Output error message including the line number
+                    cerr << "Error on line " << lineNumber << ": variable \"" + tableEntry.identifierName + "\" is already defined " + errorScope;
+                    exit(-1);
+                } else {
+                    declaredVariables.insert(tableEntry.identifierName); // Add to declared variables
+                }
                 break;
+
+
             case OTHER_STATE:
                 if (linesAndWords[i][0] == "{") 
                     leftBraceCounter++;
@@ -123,7 +154,6 @@ SymbolTable::SymbolTable(const string& cst) {
 
         std::cout << std::endl;
     }
-    
     //cout << table.size() << "*****\n";
 }
 
