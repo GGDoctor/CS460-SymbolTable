@@ -262,6 +262,8 @@ void handleSyntaxErrors(const string& errorMessage, int lineNumber) {
  *      ex: cout << SymbolTableObj;
  */
 ostream& operator << (ostream& os, const SymbolTable& obj) {
+    ParamListEntry previous;
+
     for (const auto& entry : obj.table) {
         os << "IDENTIFIER_NAME: " << entry.identifierName << '\n';
         os << "IDENTIFIER_TYPE: " << entry.identifierType << '\n';
@@ -275,7 +277,10 @@ ostream& operator << (ostream& os, const SymbolTable& obj) {
     }
 
     for (const auto& entry : obj.paramTable) {
-        os << "PARAMETER LIST FOR: " << entry.paramListName << '\n';
+        if(previous.paramListName != entry.paramListName){
+            os << "PARAMETER LIST FOR: " << entry.paramListName << '\n';
+            previous=entry;
+        }
         os << "IDENTIFIER_NAME: " << entry.identifierName << '\n';
         os << "DATATYPE: " << entry.datatype << '\n';
         os << "DATATYPE_IS_ARRAY: ";
@@ -331,12 +336,12 @@ void SymbolTable::parseParams(const vector<string>& params, int scope,
 void SymbolTable::parseParams(const vector<string>& params, int scope, const string& paramListName) {
     ParamListEntry paramListEntry;
        
-    cout << "\n******\n";
-    for (const auto& i : params)
-        cout << i << ' ';
-    cout << "\n******\n";
+    // cout << "\n******\n";
+    // for (const auto& i : params)
+    //     cout << i << ' ';
+    // cout << "\n******\n";
     paramListEntry.paramListName = paramListName;
-     paramListEntry.scope = scope;
+    paramListEntry.scope = scope;
 
     // Loop through the parameters
     for (int i = 0; i < params.size(); ++i) {
