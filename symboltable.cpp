@@ -37,6 +37,7 @@ SymbolTable::SymbolTable(const string& cst) {
         linesAndWords.push_back(words);
     }
 
+    vector<string> slice;
     // used to keep track of when a new scope is neccesary -- when to scope++
     int leftBraceCounter = 0;
     int scope = 1;
@@ -57,6 +58,9 @@ SymbolTable::SymbolTable(const string& cst) {
                 tableEntry.datatypeArraySize = 0;
                 tableEntry.scope = scope;
                 table.push_back(tableEntry);
+                assert(linesAndWords[i][3] == "(");
+                slice.assign(linesAndWords[i].begin() + 4, linesAndWords[i].end());
+                parseParams(slice, scope, tableEntry.identifierName);
                 //cout << "function";
                 break;
             case PROCEDURE:
@@ -67,6 +71,7 @@ SymbolTable::SymbolTable(const string& cst) {
                 tableEntry.datatypeArraySize = 0;
                 tableEntry.scope = scope;
                 table.push_back(tableEntry);
+                assert(linesAndWords[i][2] == "(");
                 //cout << "procedure";
                 break;
             case VARIABLE:
@@ -265,5 +270,53 @@ ostream& operator << (ostream& os, const SymbolTable& obj) {
         os << '\n';
     }
 
+    for (const auto& entry : obj.paramTable) {
+        os << "PARAMETER LIST FOR: " << entry.paramListName << '\n';
+        os << "IDENTIFIER_NAME: " << entry.identifierName << '\n';
+        os << "DATATYPE: " << entry.datatype << '\n';
+        os << "DATATYPE_IS_ARRAY: ";
+        if (entry.datatypeIsArray) os << "yes\n";
+        else os << "no\n";
+        os << "DATATYPE_ARRAY_SIZE: " << entry.datatypeArraySize << '\n';
+        os << "SCOPE: " << entry.scope << '\n';
+        os << '\n';
+    }
+
     return os;
+}
+
+void SymbolTable::parseParams(const vector<string>& params, int scope, 
+                                            const string& paramListName) {
+    ParamListEntry paramListEntry;
+    cout << "\n******\n";
+    for (const auto& i : params)
+        cout << i << ' ';
+    cout << "\n******\n";
+    paramListEntry.paramListName = paramListName;
+    paramListEntry.identifierName = params[1];
+    paramListEntry.datatype = params[0];
+    paramListEntry.scope = scope;
+    paramTable.push_back(paramListEntry);
+
+    // 1 variable
+    if (params.size() == 3) {
+        paramListEntry.datatypeIsArray = false;
+        paramListEntry.datatypeArraySize = 0;
+        paramTable.push_back(paramListEntry);
+    } else if (params[2] == ",") { // multiple variables
+        paramListEntry.datatypeIsArray = false;
+        paramListEntry.datatypeArraySize = 0;
+        paramTable.push_back(paramListEntry);
+        assert(params.size() % 2 == 1);
+        for (int j = 3; j < params.size(); j += 2) {
+            paramListEntry.identifierName = params[j];
+            paramTable.push_back(paramListEntry);
+        }
+    } else { // array 
+        paramListEntry.datatypeIsArray = true;
+        assert(params[2] == "[");
+        paramListEntry.datatypeArraySize = stoi(params[3]);
+        assert(params[4] == "]");
+        paramTable.push_back(paramListEntry);
+    }
 }

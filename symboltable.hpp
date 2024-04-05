@@ -24,6 +24,7 @@ struct ParamListEntry {
     ParamListEntry() : identifierName(""), datatype(""), 
                        datatypeIsArray(false), datatypeArraySize(0), 
                        scope(0) { }
+    string paramListName;
     string identifierName;
     string datatype;
     bool datatypeIsArray;
@@ -83,6 +84,8 @@ public:
      */
     friend ostream& operator << (ostream& os, const SymbolTable& obj);
 private:
+    void parseParams(const vector<string>& params, int scope, const string& 
+                                                                paramListName);
     list<TableEntry> table;
     list<ParamListEntry> paramTable;
 
