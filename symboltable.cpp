@@ -296,7 +296,7 @@ void SymbolTable::parseParams(const vector<string>& params, int scope,
     paramListEntry.identifierName = params[1];
     paramListEntry.datatype = params[0];
     paramListEntry.scope = scope;
-    paramTable.push_back(paramListEntry);
+    //rparamTable.push_back(paramListEntry);
 
     // 1 variable
     if (params.size() == 3) {
@@ -314,6 +314,7 @@ void SymbolTable::parseParams(const vector<string>& params, int scope,
         }
     } else { // array 
         paramListEntry.datatypeIsArray = true;
+        cout << params[2] << endl;
         assert(params[2] == "[");
         paramListEntry.datatypeArraySize = stoi(params[3]);
         assert(params[4] == "]");
