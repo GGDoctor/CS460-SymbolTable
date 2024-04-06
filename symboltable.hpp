@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <vector>
-#include <unordered_map>
 #include <list>
 #include "Tokenization.hpp" // Include the header where Token is defined
 
@@ -39,39 +38,15 @@ enum StateDFA {
     VARIABLE,
 };
 
-// Structs for variables, functions, and procedures
-struct Variable {
-    string name;
-    string type;
-    string scope;
-    string datatype;
-};
-
-struct Function {
-    string name;
-    string returnType;
-    string scope;
-    vector<pair<string, string>> parameters;
-    string datatype;
-};
-
-struct Procedure {
-    string name;
-    string scope;
-    vector<pair<string, string>> parameters;
-    string datatype;
-};
-
 // Symbol table class
 class SymbolTable {
 public:
-    SymbolTable();
+    /**
+     * @brief Constructs SymbolTable object
+     * @param cst - The string version of the concrete syntax tree that was
+     *          generated in RecursiveDescentParser
+     */
     SymbolTable(const string& cst);
-    void insertVariable(const Variable& variable);
-    void insertFunction(const Function& function);
-    void insertProcedure(const Procedure& procedure);
-    void populateSymbolTable(const vector<Token>& tokens); // Declaration for populateSymbolTable
-    void print() const;
 
     /**
      * @brief Output operator overload
@@ -88,13 +63,6 @@ private:
                                                                 paramListName);
     list<TableEntry> table;
     list<ParamListEntry> paramTable;
-
-    unordered_map<string, Variable> symbolTableVariables;
-    unordered_map<string, Function> symbolTableFunctions;
-    unordered_map<string, Procedure> symbolTableProcedures;
 };
-
-// Function to handle syntax errors
-void handleSyntaxErrors(const string& errorMessage, int lineNumber);
 
 #endif /* SYMBOLTABLE_HPP */
