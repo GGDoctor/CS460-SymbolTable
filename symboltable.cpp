@@ -5,11 +5,14 @@
 
 /**
  * @brief Constructs SymbolTable object
- * @param cst - The string version of the concrete syntax tree that was
- *          generated in RecursiveDescentParser
+ * @param concreteSyntaxTree - The concrete syntax tree that was generated in
+ *                                                      RecursiveDescentParser
  */
-SymbolTable::SymbolTable(const string& cst) {
-    //cout << cst;
+SymbolTable::SymbolTable(RecursiveDescentParser concreteSyntaxTree) {
+    // converts concreteSyntaxTree to string
+    stringstream ss;
+    ss << concreteSyntaxTree;
+    string cst = ss.str();
 
     // makes 2d vector of strings from the cst string
     //
@@ -17,12 +20,10 @@ SymbolTable::SymbolTable(const string& cst) {
     // line from the cst string
     //
     // inner vector has each word from that line
-    istringstream iss(cst);
     vector<vector<string>> linesAndWords;
     string line;
-    int lineNumber = 1;
 
-    while (getline(iss, line)) {
+    while (getline(ss, line)) {
         istringstream lineStream(line);
         vector<string> words;
         string word;
@@ -32,20 +33,22 @@ SymbolTable::SymbolTable(const string& cst) {
         }
 
         linesAndWords.push_back(words);
-        lineNumber++; 
     }
 
+    LCRS *lcrs = concreteSyntaxTree.getConcreteSyntaxTree();
     vector<string> slice;
     // used to keep track of when a new scope is neccesary -- when to scope++
     int leftBraceCounter = 0;
     int scope = 1;
     for (int i = 0; i < linesAndWords.size(); i++) {
+        int lineNumber = lcrs->token.lineNumber;
         TableEntry tableEntry;
-        StateDFA state = linesAndWords[i][0] == "function" ? FUNCTION :
-                         linesAndWords[i][0] == "procedure" ? PROCEDURE :
-                        (linesAndWords[i][0] == "int" ||
+        StateDFA state = linesAndWords[i][0] == "function" ? FUNCTION : 
+                         linesAndWords[i][0] == "procedure"  ? PROCEDURE : 
+                        (linesAndWords[i][0] == "int" || 
                          linesAndWords[i][0] == "char" ||
-                         linesAndWords[i][0] == "bool") ? VARIABLE : OTHER_STATE;
+                         linesAndWords[i][0] == "bool") ? 
+                         VARIABLE : OTHER_STATE;
 
         switch (state) {
             case FUNCTION:
@@ -59,7 +62,6 @@ SymbolTable::SymbolTable(const string& cst) {
                 assert(linesAndWords[i][3] == "(");
                 slice.assign(linesAndWords[i].begin() + 4, linesAndWords[i].end());
                 parseParams(slice, scope, tableEntry.identifierName);
-                //cout << "function";
                 break;
             case PROCEDURE:
                 tableEntry.identifierName = linesAndWords[i][1];
@@ -72,15 +74,15 @@ SymbolTable::SymbolTable(const string& cst) {
                 assert(linesAndWords[i][2] == "(");
                 slice.assign(linesAndWords[i].begin() + 3, linesAndWords[i].end());
                 parseParams(slice, scope, tableEntry.identifierName);
-                //cout << "procedure";
                 break;
             case VARIABLE:
-                tableEntry.identifierType = "datatype"; 
+                tableEntry.identifierType = "datatype";
                 tableEntry.datatype = linesAndWords[i][0];
                 tableEntry.scope = leftBraceCounter == 0 ? 0 : scope;
-            
-                for ( int j = 1; j < linesAndWords[i].size(); ) {
-                    if (linesAndWords[i][j] == ";") break;
+
+                for (int j = 1; j < linesAndWords[i].size();) {
+                    if (linesAndWords[i][j] == ";")
+                        break;
                     tableEntry.identifierName = linesAndWords[i][j];
                     tableEntry.datatypeIsArray = false;
                     tableEntry.datatypeArraySize = 0;
@@ -89,50 +91,62 @@ SymbolTable::SymbolTable(const string& cst) {
                     if (linesAndWords[i][j + 1] == "[") {
                         tableEntry.datatypeIsArray = true;
                         tableEntry.datatypeArraySize = stoi(linesAndWords[i][j + 2]);
+                        
+                        for (const auto& symbol : table) {
+                            if (symbol.identifierName == tableEntry.identifierName&&
+                                (symbol.scope == 0 || symbol.scope == tableEntry.scope)) {
+                                string globallyLocally = symbol.scope == 0 ? 
+                                                "globally" : "locally";
+                                cerr << "Error on line " << lineNumber << ": variable \""
+                                    << tableEntry.identifierName << "\" is already "
+                                    << "defined " << globallyLocally << '\n';
+                                exit(0);
+                            }
+                        }
+
+                        for (const auto& symbol : paramTable) {
+                            if (symbol.identifierName == tableEntry.identifierName &&
+                                symbol.scope == tableEntry.scope) {
+                                cerr << "Error on line " << lineNumber << ": variable \""
+                                    << tableEntry.identifierName << "\" is already "
+                                    << "defined locally\n";
+                                exit(0);
+                            }
+                        }
+
                         table.push_back(tableEntry);
                         j += 5;
                     } else {
+
+                        for (const auto& symbol : table) {
+                            if (symbol.identifierName == tableEntry.identifierName &&
+                                (symbol.scope == 0 || symbol.scope == tableEntry.scope)) {
+                                string globallyLocally = symbol.scope == 0 ? 
+                                                "globally" : "locally";
+                                cerr << "Error on line " << lineNumber << ": variable \""
+                                    << tableEntry.identifierName << "\" is already "
+                                    << "defined " << globallyLocally << '\n';
+                                exit(0);
+                            }
+                        }
+
+                        for (const auto& symbol : paramTable) {
+                            if (symbol.identifierName == tableEntry.identifierName &&
+                                symbol.scope == tableEntry.scope) {
+                                cerr << "Error on line " << lineNumber << ": variable \""
+                                    << tableEntry.identifierName << "\" is already "
+                                    << "defined locally\n";
+                                exit(0);
+                            }
+                        }
+
                         table.push_back(tableEntry);
                         j += 2;
                     }
                 }
-
-                /*
-                tableEntry.identifierName = linesAndWords[i][1];
-                tableEntry.identifierType = "datatype";
-                tableEntry.datatype = linesAndWords[i][0];
-                tableEntry.scope = leftBraceCounter == 0 ? 0 : scope;
-
-                cout << linesAndWords[i].size() << ": ";
-                for (int j = 0; j < linesAndWords[i].size(); j++) {
-                    cout << linesAndWords[i][j] << ' ';
-                }
-
-                // 1 variable
-                if (linesAndWords[i].size() == 3) {
-                    tableEntry.datatypeIsArray = false;
-                    tableEntry.datatypeArraySize = 0;
-                    table.push_back(tableEntry);
-                } else if (linesAndWords[i][2] == ",") { // multiple variables
-                    tableEntry.datatypeIsArray = false;
-                    tableEntry.datatypeArraySize = 0;
-                    table.push_back(tableEntry);
-                    assert(linesAndWords[i].size() % 2 == 1);
-                    for (int j = 3; j < linesAndWords[i].size(); j += 2) {
-                        tableEntry.identifierName = linesAndWords[i][j];
-                        table.push_back(tableEntry);
-                    }
-                } else { // array 
-                    tableEntry.datatypeIsArray = true;
-                    assert(linesAndWords[i][2] == "[");
-                    tableEntry.datatypeArraySize = stoi(linesAndWords[i][3]);
-                    assert(linesAndWords[i][4] == "]");
-                    table.push_back(tableEntry);
-                } */
-                //cout << "\nvariable";
                 break;
             case OTHER_STATE:
-                if (linesAndWords[i][0] == "{") 
+                if (linesAndWords[i][0] == "{")
                     leftBraceCounter++;
 
                 if (linesAndWords[i][0] == "}") {
@@ -140,9 +154,14 @@ SymbolTable::SymbolTable(const string& cst) {
 
                     if (leftBraceCounter == 0)
                         scope++;
-                } 
+                }
                 break;
         }
+
+        while (lcrs->rightSibling)
+            lcrs = lcrs->rightSibling;
+        if (lcrs->leftChild)
+            lcrs = lcrs->leftChild;
     }
 }
 
@@ -152,34 +171,38 @@ SymbolTable::SymbolTable(const string& cst) {
  * @param obj - The SymbolTable object to output
  * @returns The modified output stream
  * @remark Outputs symbol table according to project spec
- * 
+ *
  *      ex: cout << SymbolTableObj;
  */
-ostream& operator << (ostream& os, const SymbolTable& obj) {
+ostream &operator<<(ostream &os, const SymbolTable &obj) {
     ParamListEntry previous;
 
-    for (const auto& entry : obj.table) {
+    for (const auto &entry : obj.table) {
         os << "IDENTIFIER_NAME: " << entry.identifierName << '\n';
         os << "IDENTIFIER_TYPE: " << entry.identifierType << '\n';
         os << "DATATYPE: " << entry.datatype << '\n';
         os << "DATATYPE_IS_ARRAY: ";
-        if (entry.datatypeIsArray) os << "yes\n";
-        else os << "no\n";
+        if (entry.datatypeIsArray)
+            os << "yes\n";
+        else
+            os << "no\n";
         os << "DATATYPE_ARRAY_SIZE: " << entry.datatypeArraySize << '\n';
         os << "SCOPE: " << entry.scope << '\n';
         os << '\n';
     }
 
-    for (const auto& entry : obj.paramTable) {
-        if(previous.paramListName != entry.paramListName){
+    for (const auto &entry : obj.paramTable) {
+        if (previous.paramListName != entry.paramListName) {
             os << "PARAMETER LIST FOR: " << entry.paramListName << '\n';
-            previous=entry;
+            previous = entry;
         }
         os << "IDENTIFIER_NAME: " << entry.identifierName << '\n';
         os << "DATATYPE: " << entry.datatype << '\n';
         os << "DATATYPE_IS_ARRAY: ";
-        if (entry.datatypeIsArray) os << "yes\n";
-        else os << "no\n";
+        if (entry.datatypeIsArray)
+            os << "yes\n";
+        else
+            os << "no\n";
         os << "DATATYPE_ARRAY_SIZE: " << entry.datatypeArraySize << '\n';
         os << "SCOPE: " << entry.scope << '\n';
         os << '\n';
@@ -188,14 +211,17 @@ ostream& operator << (ostream& os, const SymbolTable& obj) {
     return os;
 }
 
-void SymbolTable::parseParams(const vector<string>& params, int scope, const string& paramListName) {
-    if (params[0] == "void") return;
+void SymbolTable::parseParams(const vector<string> &params, int scope, 
+                                            const string &paramListName) {
+    if (params[0] == "void")
+        return;
     ParamListEntry paramListEntry;
     paramListEntry.paramListName = paramListName;
     paramListEntry.scope = scope;
 
     for ( int j = 0; j < params.size(); ) {
-        if (params[j] == ")") break;
+        if (params[j] == ")")
+            break;
         paramListEntry.identifierName = params[j + 1];
         paramListEntry.datatype = params[j];
         paramListEntry.datatypeIsArray = false;
@@ -207,7 +233,8 @@ void SymbolTable::parseParams(const vector<string>& params, int scope, const str
             paramListEntry.datatypeArraySize = stoi(params[j + 3]);
             paramTable.push_back(paramListEntry);
             j += 6;
-        } else { //regular variable
+        }
+        else { // regular variable
             paramTable.push_back(paramListEntry);
             j += 3;
         }
@@ -243,4 +270,3 @@ void SymbolTable::parseParams(const vector<string>& params, int scope, const str
     }
     */
 }
-

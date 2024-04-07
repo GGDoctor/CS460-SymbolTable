@@ -23,6 +23,7 @@ Tokenization::Tokenization(const string& input) {
         if (inString) {
             Token stringToken;
             stringToken.type = STRING;
+            stringToken.lineNumber = lineNumber;
 
             while (input[i] != tokens.back().character[0]) {
                 stringToken.character += input[i++];
@@ -45,18 +46,21 @@ Tokenization::Tokenization(const string& input) {
             case '(':
                 inputToken.type = LEFT_PARENTHESIS;
                 inputToken.character = "(";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
                 
             case ')':
                 inputToken.type = RIGHT_PARENTHESIS;
                 inputToken.character = ")";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
             case '[':
                 inputToken.type = LEFT_BRACKET;
                 inputToken.character = "[";
+                inputToken.lineNumber = lineNumber;
 
                 // Check if the next character is a '-' to indicate a negative array size
                 if (input[i + 1] == '-') {
@@ -70,28 +74,34 @@ Tokenization::Tokenization(const string& input) {
             case ']':
                 inputToken.type = RIGHT_BRACKET;
                 inputToken.character = "]";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
             case '{':
                 inputToken.type = LEFT_BRACE;
                 inputToken.character = "{";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
             case '}':
                 inputToken.type = RIGHT_BRACE;
                 inputToken.character = "}";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
             case '"':
                 inputToken.type = DOUBLE_QUOTE;
                 inputToken.character = "\"";
+                inputToken.lineNumber = lineNumber;
+
                 if(input[i+1]=='\n' || input[i-1] == '\\'){
                     std::cerr << "Syntax error on line " << lineNumber << ": unterminated string quote." << endl;
                     exit(EXIT_FAILURE);
                 }
+
                 tokens.push_back(inputToken);
                 inString = !inString;
                 break;
@@ -99,6 +109,7 @@ Tokenization::Tokenization(const string& input) {
             case '\'':
                 inputToken.type = SINGLE_QUOTE;
                 inputToken.character = "\'";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 inString = !inString;
                 break;
@@ -106,12 +117,14 @@ Tokenization::Tokenization(const string& input) {
             case ';':
                 inputToken.type = SEMICOLON;
                 inputToken.character = ";";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
             
             case ',':
                 inputToken.type = COMMA;
                 inputToken.character = ",";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
@@ -119,11 +132,13 @@ Tokenization::Tokenization(const string& input) {
                 if (nextChar == '=') {
                     inputToken.type = BOOLEAN_EQUAL;
                     inputToken.character = "==";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                     i++;
                 } else {
                     inputToken.type = ASSIGNMENT;
                     inputToken.character = "=";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                 }
                 
@@ -132,6 +147,7 @@ Tokenization::Tokenization(const string& input) {
             case '+':
                 inputToken.type = PLUS;
                 inputToken.character = "+";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
@@ -140,6 +156,7 @@ Tokenization::Tokenization(const string& input) {
                     i++;
                     inputToken.type = INTEGER;
                     inputToken.character = '-';
+                    inputToken.lineNumber = lineNumber;
                     
                     while (isdigit(input[i])) {
                         inputToken.character += input[i++];
@@ -150,6 +167,7 @@ Tokenization::Tokenization(const string& input) {
                 } else {
                     inputToken.type = MINUS;
                     inputToken.character = "-";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                 }
             
@@ -158,24 +176,28 @@ Tokenization::Tokenization(const string& input) {
             case '/':
                 inputToken.type = DIVIDE;
                 inputToken.character = "/";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
             case '*':
                 inputToken.type = ASTERISK;
                 inputToken.character = "*";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
             case '%':
                 inputToken.type = MODULO;
                 inputToken.character = "%";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
 
             case '^':
                 inputToken.type = CARAT;
                 inputToken.character = "^";
+                inputToken.lineNumber = lineNumber;
                 tokens.push_back(inputToken);
                 break;
             
@@ -183,11 +205,13 @@ Tokenization::Tokenization(const string& input) {
                 if (nextChar == '=') {
                     inputToken.type = LT_EQUAL;
                     inputToken.character = "<=";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                     i++;
                 } else {
                     inputToken.type = LT;
                     inputToken.character = "<";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                 }
                 
@@ -197,11 +221,13 @@ Tokenization::Tokenization(const string& input) {
                 if (nextChar == '=') {
                     inputToken.type = GT_EQUAL;
                     inputToken.character = ">=";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                     i++;
                 } else {
                     inputToken.type = GT;
                     inputToken.character = ">";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                 }
 
@@ -211,6 +237,7 @@ Tokenization::Tokenization(const string& input) {
                 if (nextChar == '&') {
                     inputToken.type = BOOLEAN_AND_OPERATOR;
                     inputToken.character = "&&";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                     i++;
                 }
@@ -221,6 +248,7 @@ Tokenization::Tokenization(const string& input) {
                 if (nextChar == '|') {
                     inputToken.type = BOOLEAN_OR_OPERATOR;
                     inputToken.character = "||";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                     i++;
                 }
@@ -231,11 +259,13 @@ Tokenization::Tokenization(const string& input) {
                 if (nextChar == '=') {
                     inputToken.type = BOOLEAN_NOT_EQUAL;
                     inputToken.character = "!=";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                     i++;
                 } else {
                     inputToken.type = BOOLEAN_NOT_OPERATOR;
                     inputToken.character = "!";
+                    inputToken.lineNumber = lineNumber;
                     tokens.push_back(inputToken);
                 }
 
@@ -252,7 +282,6 @@ Tokenization::Tokenization(const string& input) {
 
                     inputToken.character += input[i++];
                 }
-
                 inputToken.type = INTEGER;             
             } else {
                 while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
@@ -299,11 +328,12 @@ Tokenization::Tokenization(const string& input) {
                         exit(0);
                     }
                 }
-
+            
                 inputToken.type = IDENTIFIER;
             }
 
             i--;
+            inputToken.lineNumber = lineNumber;
             tokens.push_back(inputToken);
 
 

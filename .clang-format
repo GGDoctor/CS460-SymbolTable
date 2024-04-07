@@ -1,0 +1,5 @@
+{
+    "BasedOnStyle": "K&R",
+    "IndentWidth": 4,
+    "UseTab": "Never"
+}

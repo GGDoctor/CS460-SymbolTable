@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include "Tokenization.hpp" // Include the header where Token is defined
+#include "RecursiveDescentParser.hpp"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ public:
      * @param cst - The string version of the concrete syntax tree that was
      *          generated in RecursiveDescentParser
      */
-    SymbolTable(const string& cst);
+    SymbolTable(RecursiveDescentParser concreteSyntaxTree);
 
     /**
      * @brief Output operator overload

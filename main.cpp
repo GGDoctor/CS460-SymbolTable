@@ -43,9 +43,11 @@ int main(int argc, char *argv[]) {
     // cout << recursiveDescentParser;
 
     // converting the output stream to a string for SymbolTable constructor
+    /*
     stringstream ss2;
     ss2 << recursiveDescentParser;
-    SymbolTable symbolTable(ss2.str());
+    */
+    SymbolTable symbolTable(recursiveDescentParser);
     cout << symbolTable;
 
     return 0;

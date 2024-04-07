@@ -65,6 +65,7 @@ enum TokenType {
 struct Token {
     TokenType type;
     string character;
+    int lineNumber;
 };
 
 /**

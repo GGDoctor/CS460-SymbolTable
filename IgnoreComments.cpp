@@ -70,13 +70,15 @@ IgnoreComments::IgnoreComments(const string& fileName) {
             case ASTERICK:
                 if (currentChar == '/') {
                     state = ANYTHING;
-                }else if (currentChar == '\n'){
+                    result += ' ';
+                } else if (currentChar == '\n'){
                     line++; 
                     state = MULTI_LINE_COMMENT;
+                    result += '\n';
                 } else if (currentChar != '*') {
                     state = MULTI_LINE_COMMENT;
+                    result += ' ';
                 } 
-                result += ' ';
                 break;
 
             // Handle single line 
